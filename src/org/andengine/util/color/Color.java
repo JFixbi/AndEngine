@@ -1,10 +1,13 @@
 package org.andengine.util.color;
 
 /**
- * TODO Potentially too much work is being done when packing the whole Color, when i.e. only Alpha had been changed. Solution keep the int packed color and update only relevant parts before converting it to float. This saves a couple of bit operations.
+ * TODO Potentially too much work is being done when packing the whole Color,
+ * when i.e. only Alpha had been changed. Solution keep the int packed color and
+ * update only relevant parts before converting it to float. This saves a couple
+ * of bit operations.
  * 
  * (c) Zynga 2011
- *
+ * 
  * @author Nicolas Gramlich <ngramlich@zynga.com>
  * @since 02:23:08 - 12.08.2011
  */
@@ -22,7 +25,7 @@ public class Color {
 	public static final Color BLUE = new Color(0, 0, 1, 1);
 	public static final Color PINK = new Color(1, 0, 1, 1);
 	public static final Color TRANSPARENT = new Color(1, 1, 1, 0);
-	
+
 	public static final float WHITE_PACKED = Color.WHITE.getPacked();
 	public static final float BLACK_PACKED = Color.BLACK.getPacked();
 	public static final float RED_PACKED = Color.RED.getPacked();
@@ -31,7 +34,8 @@ public class Color {
 	public static final float CYAN_PACKED = Color.CYAN.getPacked();
 	public static final float BLUE_PACKED = Color.BLUE.getPacked();
 	public static final float PINK_PACKED = Color.PINK.getPacked();
-	public static final float TRANSPARENT_PACKED = Color.TRANSPARENT.getPacked();
+	public static final float TRANSPARENT_PACKED = Color.TRANSPARENT
+			.getPacked();
 
 	// ===========================================================
 	// Fields
@@ -52,7 +56,8 @@ public class Color {
 		this(pRed, pGreen, pBlue, 1);
 	}
 
-	public Color(final float pRed, final float pGreen, final float pBlue, final float pAlpha) {
+	public Color(final float pRed, final float pGreen, final float pBlue,
+			final float pAlpha) {
 		this.set(pRed, pGreen, pBlue, pAlpha);
 	}
 
@@ -83,7 +88,7 @@ public class Color {
 	}
 
 	public boolean setRedChecking(final float pRed) {
-		if(this.mRed != pRed) {
+		if (this.mRed != pRed) {
 			this.mRed = pRed;
 
 			this.pack();
@@ -99,7 +104,7 @@ public class Color {
 	}
 
 	public boolean setGreenChecking(final float pGreen) {
-		if(this.mGreen != pGreen) {
+		if (this.mGreen != pGreen) {
 			this.mGreen = pGreen;
 
 			this.pack();
@@ -115,7 +120,7 @@ public class Color {
 	}
 
 	public boolean setBlueChecking(final float pBlue) {
-		if(this.mBlue != pBlue) {
+		if (this.mBlue != pBlue) {
 			this.mBlue = pBlue;
 
 			this.pack();
@@ -131,7 +136,7 @@ public class Color {
 	}
 
 	public boolean setAlphaChecking(final float pAlpha) {
-		if(this.mAlpha != pAlpha) {
+		if (this.mAlpha != pAlpha) {
 			this.mAlpha = pAlpha;
 
 			this.pack();
@@ -148,8 +153,9 @@ public class Color {
 		this.pack();
 	}
 
-	public boolean setChanging(final float pRed, final float pGreen, final float pBlue) {
-		if(this.mRed != pRed || this.mGreen != pGreen || this.mBlue != pBlue) {
+	public boolean setChanging(final float pRed, final float pGreen,
+			final float pBlue) {
+		if (this.mRed != pRed || this.mGreen != pGreen || this.mBlue != pBlue) {
 			this.mRed = pRed;
 			this.mGreen = pGreen;
 			this.mBlue = pBlue;
@@ -160,7 +166,8 @@ public class Color {
 		return false;
 	}
 
-	public void set(final float pRed, final float pGreen, final float pBlue, final float pAlpha) {
+	public void set(final float pRed, final float pGreen, final float pBlue,
+			final float pAlpha) {
 		this.mRed = pRed;
 		this.mGreen = pGreen;
 		this.mBlue = pBlue;
@@ -169,8 +176,10 @@ public class Color {
 		this.pack();
 	}
 
-	public boolean setChanging(final float pRed, final float pGreen, final float pBlue, final float pAlpha) {
-		if(this.mAlpha != pAlpha || this.mRed != pRed || this.mGreen != pGreen || this.mBlue != pBlue) {
+	public boolean setChanging(final float pRed, final float pGreen,
+			final float pBlue, final float pAlpha) {
+		if (this.mAlpha != pAlpha || this.mRed != pRed || this.mGreen != pGreen
+				|| this.mBlue != pBlue) {
 			this.mRed = pRed;
 			this.mGreen = pGreen;
 			this.mBlue = pBlue;
@@ -192,7 +201,8 @@ public class Color {
 	}
 
 	public boolean setChecking(final Color pColor) {
-		if(this.mAlpha != pColor.mAlpha || this.mRed != pColor.mRed || this.mGreen != pColor.mGreen || this.mBlue != pColor.mBlue) {
+		if (this.mAlpha != pColor.mAlpha || this.mRed != pColor.mRed
+				|| this.mGreen != pColor.mGreen || this.mBlue != pColor.mBlue) {
 			this.mRed = pColor.mRed;
 			this.mGreen = pColor.mGreen;
 			this.mBlue = pColor.mBlue;
@@ -218,38 +228,48 @@ public class Color {
 
 	@Override
 	public String toString() {
-		return new StringBuilder()
-			.append("[Red: ")
-			.append(this.mRed)
-			.append(", Green: ")
-			.append(this.mGreen)
-			.append(", Blue: ")
-			.append(this.mBlue)
-			.append(", Alpha: ")
-			.append(this.mAlpha)
-			.append("]")
-			.toString();
+		return new StringBuilder().append("[Red: ").append(this.mRed)
+				.append(", Green: ").append(this.mGreen).append(", Blue: ")
+				.append(this.mBlue).append(", Alpha: ").append(this.mAlpha)
+				.append("]").toString();
 	}
 
 	// ===========================================================
 	// Methods
 	// ===========================================================
+	public static final int FF_VALUE = 0XFFFFFFFF;
+	public static final int VALUE_255 = 255;
+	public static final int VALUE_24 = 24;
+	public static final int VALUE_16 = 16;
+	public static final int VALUE_8 = 8;
 
 	private void pack() {
-		final int packed = ((int)(255 * this.mAlpha) << 24) | ((int)(255 * this.mBlue) << 16) | ((int)(255 * this.mGreen) << 8) | ((int)(255 * this.mRed));
-		this.mPacked = Float.intBitsToFloat(packed & 0XFEFFFFFF);
+		final int packed = ((int) (VALUE_255 * this.mAlpha) << VALUE_24)
+				| ((int) (VALUE_255 * this.mBlue) << VALUE_16)
+				| ((int) (VALUE_255 * this.mGreen) << VALUE_8)
+				| ((int) (VALUE_255 * this.mRed));
+		this.mPacked = Float.intBitsToFloat(packed & FF_VALUE);
 	}
 
-	public static float pack(final float pRed, final float pGreen, final float pBlue, final float pAlpha) {
-		final int packed = ((int)(255 * pAlpha) << 24) | ((int)(255 * pBlue) << 16) | ((int)(255 * pGreen) << 8) | ((int)(255 * pRed));
-		return Float.intBitsToFloat(packed & 0XFEFFFFFF);
+	public static float pack(final float pRed, final float pGreen,
+			final float pBlue, final float pAlpha) {
+		final int packed = ((int) (VALUE_255 * pAlpha) << VALUE_24)
+				| ((int) (VALUE_255 * pBlue) << VALUE_16)
+				| ((int) (VALUE_255 * pGreen) << VALUE_8)
+				| ((int) (VALUE_255 * pRed));
+		return Float.intBitsToFloat(packed & FF_VALUE);
 	}
 
-	public void mix(final Color pColorA, final float pPercentageA, final Color pColorB, final float pPercentageB) {
-		final float red = pColorA.mRed * pPercentageA + pColorB.mRed * pPercentageB;
-		final float green = pColorA.mGreen * pPercentageA + pColorB.mGreen * pPercentageB;
-		final float blue = pColorA.mBlue * pPercentageA + pColorB.mBlue * pPercentageB;
-		final float alpha = pColorA.mAlpha * pPercentageA + pColorB.mAlpha * pPercentageB;
+	public void mix(final Color pColorA, final float pPercentageA,
+			final Color pColorB, final float pPercentageB) {
+		final float red = pColorA.mRed * pPercentageA + pColorB.mRed
+				* pPercentageB;
+		final float green = pColorA.mGreen * pPercentageA + pColorB.mGreen
+				* pPercentageB;
+		final float blue = pColorA.mBlue * pPercentageA + pColorB.mBlue
+				* pPercentageB;
+		final float alpha = pColorA.mAlpha * pPercentageA + pColorB.mAlpha
+				* pPercentageB;
 
 		this.set(red, green, blue, alpha);
 	}
