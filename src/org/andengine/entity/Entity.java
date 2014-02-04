@@ -49,11 +49,13 @@ public class Entity implements IEntity {
 	// Fields
 	// ===========================================================
 
+	protected boolean mDisposed;
 	protected boolean mVisible = true;
-	protected boolean mIgnoreUpdate = false;
+	protected boolean mCullingEnabled;
+	protected boolean mIgnoreUpdate;
 	protected boolean mChildrenVisible = true;
-	protected boolean mChildrenIgnoreUpdate = false;
-	protected boolean mChildrenSortPending = false;
+	protected boolean mChildrenIgnoreUpdate;
+	protected boolean mChildrenSortPending;
 
 	protected int mZIndex = 0;
 
@@ -128,6 +130,11 @@ public class Entity implements IEntity {
 	}
 
 	@Override
+	public boolean isDisposed() {
+		return this.mDisposed;
+	}
+
+	@Override
 	public boolean isVisible() {
 		return this.mVisible;
 	}
@@ -135,6 +142,21 @@ public class Entity implements IEntity {
 	@Override
 	public void setVisible(final boolean pVisible) {
 		this.mVisible = pVisible;
+	}
+
+	@Override
+	public boolean isCullingEnabled() {
+		return this.mCullingEnabled;
+	}
+
+	@Override
+	public void setCullingEnabled(final boolean pCullingEnabled) {
+		this.mCullingEnabled = pCullingEnabled;
+	}
+
+	@Override
+	public boolean isCulled(final Camera pCamera) {
+		return false;
 	}
 
 	@Override
@@ -768,6 +790,7 @@ public class Entity implements IEntity {
 		return this.convertLocalToSceneCoordinates(0, 0);
 	}
 
+	@Override
 	public Transformation getLocalToParentTransformation() {
 		final Transformation localToParentTransformation = this.mLocalToParentTransformation;
 		if(this.mLocalToParentTransformationDirty) {
@@ -819,6 +842,7 @@ public class Entity implements IEntity {
 		return localToParentTransformation;
 	}
 
+	@Override
 	public Transformation getParentToLocalTransformation() {
 		final Transformation parentToLocalTransformation = this.mParentToLocalTransformation;
 		if(this.mParentToLocalTransformationDirty) {
@@ -1005,7 +1029,7 @@ public class Entity implements IEntity {
 
 	@Override
 	public final void onDraw(final GLState pGLState, final Camera pCamera) {
-		if(this.mVisible) {
+		if(this.mVisible && !(this.mCullingEnabled && this.isCulled(pCamera))) {
 			this.onManagedDraw(pGLState, pCamera);
 		}
 	}
@@ -1020,6 +1044,7 @@ public class Entity implements IEntity {
 	@Override
 	public void reset() {
 		this.mVisible = true;
+		this.mCullingEnabled = false;
 		this.mIgnoreUpdate = false;
 		this.mChildrenVisible = true;
 		this.mChildrenIgnoreUpdate = false;
@@ -1043,6 +1068,24 @@ public class Entity implements IEntity {
 			for(int i = entities.size() - 1; i >= 0; i--) {
 				entities.get(i).reset();
 			}
+		}
+	}
+
+	@Override
+	public void dispose() {
+		if(!this.mDisposed) {
+			this.mDisposed = true;
+		} else {
+			throw new AlreadyDisposedException();
+		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+
+		if(!this.mDisposed) {
+			this.dispose();
 		}
 	}
 
@@ -1178,30 +1221,44 @@ public class Entity implements IEntity {
 		{
 			this.onApplyTransformations(pGLState);
 
-			this.preDraw(pGLState, pCamera);
-			this.draw(pGLState, pCamera);
-			this.postDraw(pGLState, pCamera);
+			final ArrayList<IEntity> children = this.mChildren;
+			if(children == null || !this.mChildrenVisible) {
+				/* Draw only self. */
+				this.preDraw(pGLState, pCamera);
+				this.draw(pGLState, pCamera);
+				this.postDraw(pGLState, pCamera);
+			} else {
+				if(this.mChildrenSortPending) {
+					ZIndexSorter.getInstance().sort(this.mChildren);
+				}
 
-			this.onDrawChildren(pGLState, pCamera);
+				final int childCount = children.size();
+				int i = 0;
+
+				{ /* Draw children behind this Entity. */
+					for(; i < childCount; i++) {
+						final IEntity child = children.get(i);
+						if(child.getZIndex() < 0) {
+							child.onDraw(pGLState, pCamera);
+						} else {
+							break;
+						}
+					}
+				}
+
+				/* Draw self. */
+				this.preDraw(pGLState, pCamera);
+				this.draw(pGLState, pCamera);
+				this.postDraw(pGLState, pCamera);
+
+				{ /* Draw children in front of this Entity. */
+					for(; i < childCount; i++) {
+						children.get(i).onDraw(pGLState, pCamera);
+					}
+				}
+			}
 		}
 		pGLState.popModelViewGLMatrix();
-	}
-
-	protected void onDrawChildren(final GLState pGLState, final Camera pCamera) {
-		if(this.mChildren != null && this.mChildrenVisible) {
-			if(this.mChildrenSortPending) {
-				ZIndexSorter.getInstance().sort(this.mChildren);
-			}
-			this.onManagedDrawChildren(pGLState, pCamera);
-		}
-	}
-
-	public void onManagedDrawChildren(final GLState pGLState, final Camera pCamera) {
-		final ArrayList<IEntity> children = this.mChildren;
-		final int childCount = children.size();
-		for(int i = 0; i < childCount; i++) {
-			children.get(i).onDraw(pGLState, pCamera);
-		}
 	}
 
 	protected void onManagedUpdate(final float pSecondsElapsed) {

@@ -72,7 +72,7 @@ public class Font implements IFont {
 		this.mBackgroundPaint = new Paint();
 		this.mBackgroundPaint.setColor(Color.TRANSPARENT);
 		this.mBackgroundPaint.setStyle(Style.FILL);
-		
+
 		this.mPaint = new Paint();
 		this.mPaint.setTypeface(pTypeface);
 		this.mPaint.setColor(pColor);
@@ -139,21 +139,14 @@ public class Font implements IFont {
 
 	@Override
 	public synchronized Letter getLetter(final char pCharacter) throws FontException {
-		final SparseArray<Letter> managedCharacterToLetterMap = this.mManagedCharacterToLetterMap;
-		Letter letter = managedCharacterToLetterMap.get(pCharacter);
+		Letter letter = this.mManagedCharacterToLetterMap.get(pCharacter);
 		if(letter == null) {
 			letter = this.createLetter(pCharacter);
 
 			this.mLettersPendingToBeDrawnToTexture.add(letter);
-			managedCharacterToLetterMap.put(pCharacter, letter);
+			this.mManagedCharacterToLetterMap.put(pCharacter, letter);
 		}
 		return letter;
-	}
-
-	@Override
-	public float getStringWidth(final String pText) {
-		this.mPaint.getTextBounds(pText, 0, pText.length(), Font.TEXTBOUNDS_TMP);
-		return Font.TEXTBOUNDS_TMP.width();
 	}
 
 	// ===========================================================
@@ -175,7 +168,7 @@ public class Font implements IFont {
 		return Font.TEXTWIDTH_CONTAINER_TMP[0];
 	}
 
-	protected Bitmap getLetterBitmap(final char pCharacter) {
+	protected Bitmap getLetterBitmap(final char pCharacter) throws IllegalArgumentException {
 		final String characterAsString = String.valueOf(pCharacter);
 
 		this.updateTextBounds(characterAsString);
@@ -185,10 +178,10 @@ public class Font implements IFont {
 		final int letterWidth = Font.TEXTBOUNDS_TMP.width() + 2 * Font.LETTER_TEXTURE_PADDING;
 		final int letterHeight = Font.TEXTBOUNDS_TMP.height() + 2 * Font.LETTER_TEXTURE_PADDING;
 
-		final Bitmap bitmap = Bitmap.createBitmap(letterWidth, letterHeight, Config.ARGB_8888);
 		if(letterWidth == 0 || letterHeight == 0) {
 			throw new IllegalArgumentException("Character '" + pCharacter + "' cannot be drawn, because it has no extent (width='" + letterWidth + "', height='" + letterHeight + "')");
 		}
+		final Bitmap bitmap = Bitmap.createBitmap(letterWidth, letterHeight, Config.ARGB_8888);
 		this.mCanvas.setBitmap(bitmap);
 
 		/* Make background transparent. */

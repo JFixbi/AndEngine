@@ -13,6 +13,7 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.shader.ShaderProgram;
 import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.IVertexBufferObject;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 import org.andengine.util.transformation.Transformation;
 
@@ -59,6 +60,11 @@ public abstract class BaseMenuItemDecorator implements IMenuItem {
 	@Override
 	public int getID() {
 		return this.mMenuItem.getID();
+	}
+
+	@Override
+	public VertexBufferObjectManager getVertexBufferObjectManager() {
+		return this.mMenuItem.getVertexBufferObjectManager();
 	}
 
 	@Override
@@ -460,6 +466,16 @@ public abstract class BaseMenuItemDecorator implements IMenuItem {
 	}
 
 	@Override
+	public boolean isDisposed() {
+		return this.mMenuItem.isDisposed();
+	}
+
+	@Override
+	public void dispose() {
+		this.mMenuItem.dispose();
+	}
+
+	@Override
 	public boolean contains(final float pX, final float pY) {
 		return this.mMenuItem.contains(pX, pY);
 	}
@@ -625,6 +641,16 @@ public abstract class BaseMenuItemDecorator implements IMenuItem {
 	}
 
 	@Override
+	public Transformation getLocalToParentTransformation() {
+		return this.mMenuItem.getLocalToParentTransformation();
+	}
+
+	@Override
+	public Transformation getParentToLocalTransformation() {
+		return this.mMenuItem.getParentToLocalTransformation();
+	}
+
+	@Override
 	public boolean hasParent() {
 		return this.mMenuItem.hasParent();
 	}
@@ -647,6 +673,11 @@ public abstract class BaseMenuItemDecorator implements IMenuItem {
 	@Override
 	public void setVisible(final boolean pVisible) {
 		this.mMenuItem.setVisible(pVisible);
+	}
+
+	@Override
+	public boolean isCulled(final Camera pCamera) {
+		return this.mMenuItem.isCulled(pCamera);
 	}
 
 	@Override

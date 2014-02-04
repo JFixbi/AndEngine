@@ -9,6 +9,7 @@ import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.IVertexBufferObject;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 /**
  * (c) 2010 Nicolas Gramlich
@@ -30,7 +31,6 @@ public abstract class Shape extends Entity implements IShape {
 	protected int mDestinationBlendFunction = IShape.BLENDFUNCTION_DESTINATION_DEFAULT;
 
 	protected boolean mBlendingEnabled = false;
-	protected boolean mCullingEnabled = false;
 
 	protected ShaderProgram mShaderProgram;
 
@@ -65,16 +65,6 @@ public abstract class Shape extends Entity implements IShape {
 	}
 
 	@Override
-	public boolean isCullingEnabled() {
-		return this.mCullingEnabled;
-	}
-
-	@Override
-	public void setCullingEnabled(final boolean pCullingEnabled) {
-		this.mCullingEnabled = pCullingEnabled;
-	}
-
-	@Override
 	public ShaderProgram getShaderProgram() {
 		return this.mShaderProgram;
 	}
@@ -82,6 +72,11 @@ public abstract class Shape extends Entity implements IShape {
 	@Override
 	public void setShaderProgram(final ShaderProgram pShaderProgram) {
 		this.mShaderProgram = pShaderProgram;
+	}
+
+	@Override
+	public VertexBufferObjectManager getVertexBufferObjectManager() {
+		return getVertexBufferObject().getVertexBufferObjectManager();
 	}
 
 	// ===========================================================
@@ -110,20 +105,6 @@ public abstract class Shape extends Entity implements IShape {
 		return false;
 	}
 
-	/**
-	 * Will only be performed if {@link Shape#isCullingEnabled()} is true.
-	 * @param pCamera
-	 * @return <code>true</code> when this object is visible by the {@link Camera}, <code>false</code> otherwise.
-	 */
-	protected abstract boolean isCulled(final Camera pCamera);
-
-	@Override
-	protected void onManagedDraw(final GLState pGLState, final Camera pCamera) {
-		if(!this.mCullingEnabled || !this.isCulled(pCamera)) {
-			super.onManagedDraw(pGLState, pCamera);
-		}
-	}
-
 	@Override
 	public void reset() {
 		super.reset();
@@ -133,14 +114,12 @@ public abstract class Shape extends Entity implements IShape {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
+	public void dispose() {
+		super.dispose();
 
 		final IVertexBufferObject vertexBufferObject = this.getVertexBufferObject();
-		if(vertexBufferObject != null) {
-			if(vertexBufferObject.isManaged()) {
-				vertexBufferObject.unload();
-			}
+		if(vertexBufferObject != null && vertexBufferObject.isAutoDispose() && !vertexBufferObject.isDisposed()) {
+			vertexBufferObject.dispose();
 		}
 	}
 
